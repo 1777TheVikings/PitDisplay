@@ -1,6 +1,6 @@
 // ---------------------------
 // Enter the event key here!
-const eventKey = "2017mokc";
+const eventKey = "2018cttd";
 // ---------------------------
 
 var canvas = document.querySelector("canvas");
@@ -90,7 +90,7 @@ function updateData() {
 	Http.send();
 	Http.onreadystatechange = (e) => {
 		if (Http.readyState != 4) { return; }
-		// console.log(Http.responseText);
+		console.log(Http.responseText);
 		matchData = JSON.parse(Http.responseText);
 		matchData = matchData.sort(function(a, b) {return a.match_number - b.match_number;});
 		console.log(matchData);
@@ -101,7 +101,7 @@ function updateData() {
 		Http.send();
 		Http.onreadystatechange = (e) => {
 			if (Http.readyState != 4) { return; }
-			// console.log(Http.responseText);
+			console.log(Http.responseText);
 			eventData = JSON.parse(Http.responseText);
 			console.log(eventData);
 
@@ -209,7 +209,13 @@ function draw() {
 	// Left Pane
 	c.font = "50px Comic Sans MS";
 	c.fillText("Winner:", 50, windowBreak + 120);
-	if (matchData[activeMatch].winning_alliance === "red") {c.fillStyle = "#8f1f1f";} else {c.fillStyle = "#1f1f8f";}
+	if (matchData[activeMatch].winning_alliance === "red") {
+		c.fillStyle = "#8f1f1f";
+	} else if (matchData[activeMatch].winning_alliance === "blue") {
+		c.fillStyle = "#1f1f8f";
+	} else {
+		matchData[activeMatch].winning_alliance = "none";
+	}
 	c.fillText(matchData[activeMatch].winning_alliance.charAt(0).toUpperCase() + matchData[activeMatch].winning_alliance.slice(1), 270, windowBreak + 120);
 	
 	c.fillStyle = "#1f1f1f";
@@ -314,6 +320,7 @@ function draw() {
 	c.fillText(suffix, 950 + c.measureText(ordinal).width / 2 + 5, 125);
 	
 };
+
 
 
 
