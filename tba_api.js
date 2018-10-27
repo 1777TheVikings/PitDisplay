@@ -77,6 +77,7 @@ var matchData;
 var eventData;
 var nextMatch;
 var firstDay;
+var timeAdjust = -18060; // when the time is just off for some reason
 var time = {};
 var ourPosition = [];
 const Http = new XMLHttpRequest();
@@ -90,11 +91,10 @@ function updateData() {
 	Http.send();
 	Http.onreadystatechange = (e) => {
 		if (Http.readyState != 4) { return; }
-		console.log(Http.responseText);
 		matchData = JSON.parse(Http.responseText);
 		matchData = matchData.sort(function(a, b) {return a.match_number - b.match_number;});
 		console.log(matchData);
-		firstDay = Math.floor(matchData[0].time / 86400) * 86400;
+		firstDay = Math.floor(matchData[0].predicted_time / 86400) * 86400;
 
 		Http.open("GET", url2);
 		Http.setRequestHeader("X-TBA-Auth-Key", accessCode);
@@ -145,6 +145,7 @@ function updateNextMatch () {
 updateData();
 
 function getTime (raw) {
+	raw = raw + timeAdjust;
 	var time = {
 		raw: raw,
 		day: 1 + Math.floor((raw - firstDay) / 86400),
@@ -206,10 +207,12 @@ function draw() {
 		c.fillText(a + 1, (a + 0.5) * innerWidth / matchData.length - c.measureText(a + 1).width / 2, innerHeight - 15);
 	}
 
-	// Left Pane
+	// Left Pane 
 	c.font = "50px Comic Sans MS";
 	c.fillText("Winner:", 50, windowBreak + 120);
-	if (matchData[activeMatch].winning_alliance === "red") {
+	if (matchData[activeMatch] == undefined) {
+		matchData[activeMatch].winning_alliance = "none";
+	} else if (matchData[activeMatch].winning_alliance === "red") {
 		c.fillStyle = "#8f1f1f";
 	} else if (matchData[activeMatch].winning_alliance === "blue") {
 		c.fillStyle = "#1f1f8f";
@@ -219,7 +222,7 @@ function draw() {
 	c.fillText(matchData[activeMatch].winning_alliance.charAt(0).toUpperCase() + matchData[activeMatch].winning_alliance.slice(1), 270, windowBreak + 120);
 	
 	c.fillStyle = "#1f1f1f";
-	if (matchData[activeMatch].winning_alliance === null) {
+	if (matchData[activeMatch].winning_alliance === "none") {
 		c.font = "50px Comic Sans MS";
 		c.fillText("Undecided", innerWidth * 3 / 8 - c.measureText("Undecided").width / 2, windowBreak + 100);
 	} else if (ourPosition[activeMatch].alliance === matchData[activeMatch].winning_alliance) {
@@ -243,13 +246,13 @@ function draw() {
 	c.fillStyle = "#1f1f8f";
 	c.fillText("Blue: " + matchData[activeMatch].alliances.blue.score, innerWidth / 2 - 30 - c.measureText("Blue: " + matchData[activeMatch].alliances.blue.score).width, windowBreak + 270);
 
-	var minutes = getTime(matchData[activeMatch].time).minute;
+	var minutes = getTime(matchData[activeMatch].predicted_time).minute;
 	if (minutes < 10) {minutes = "0" + minutes;}
 	c.font = "60px Comic Sans MS";
 	c.fillStyle = "#1f1f1f";
-	c.fillText("Time: " + getTime(matchData[activeMatch].time).hour12 + ":" + minutes + " " + getTime(matchData[activeMatch].time).AMorPM, innerWidth / 4 - c.measureText("Time: " + getTime(matchData[activeMatch].time).hour12 + ":" + minutes + " " + getTime(matchData[activeMatch].time).AMorPM).width / 2, windowBreak + 360);
+	c.fillText("Time: " + getTime(matchData[activeMatch].predicted_time).hour12 + ":" + minutes + " " + getTime(matchData[activeMatch].predicted_time).AMorPM, innerWidth / 4 - c.measureText("Time: " + getTime(matchData[activeMatch].predicted_time).hour12 + ":" + minutes + " " + getTime(matchData[activeMatch].predicted_time).AMorPM).width / 2, windowBreak + 360);
 	c.font = "40px Comic Sans MS";
-	c.fillText("Day " + getTime(matchData[activeMatch].time).day + "   Match " + matchData[activeMatch].match_number, innerWidth / 4 - c.measureText("Day " + getTime(matchData[activeMatch].time).day + "   Match " + matchData[activeMatch].match_number).width / 2, windowBreak + 410);
+	c.fillText("Day " + getTime(matchData[activeMatch].predicted_time).day + "   Match " + matchData[activeMatch].match_number, innerWidth / 4 - c.measureText("Day " + getTime(matchData[activeMatch].predicted_time).day + "   Match " + matchData[activeMatch].match_number).width / 2, windowBreak + 410);
 
 	// Right Pane
 	c.font = "75px Comic Sans MS";
@@ -279,36 +282,36 @@ function draw() {
 	c.font = "40px Comic Sans MS";
 	c.fillText("Next Match:", 30, 50);
 
-	var minutes = getTime(matchData[nextMatch].time).minute;
+	var minutes = getTime(matchData[nextMatch].predicted_time).minute;
 	if (minutes < 10) {minutes = "0" + minutes;}
 	c.font = "150px Comic Sans MS";
 	c.fillStyle = "#000000";
-	c.fillText(getTime(matchData[nextMatch].time).hour12 + ":" + minutes, 30, 200);
-	var textWidth = c.measureText(getTime(matchData[nextMatch].time).hour12 + ":" + minutes + " ").width;
+	c.fillText(getTime(matchData[nextMatch].predicted_time).hour12 + ":" + minutes, 30, 200);
+	var textWidth = c.measureText(getTime(matchData[nextMatch].predicted_time).hour12 + ":" + minutes + " ").width;
 	c.font = "75px Comic Sans MS";
-	c.fillText(getTime(matchData[nextMatch].time).AMorPM, textWidth, 145);
+	c.fillText(getTime(matchData[nextMatch].predicted_time).AMorPM, textWidth, 145);
 	c.font = "75px Comic Sans MS";
-	c.fillText("Day " + getTime(matchData[nextMatch].time).day, 50, 275);
+	c.fillText("Day " + getTime(matchData[nextMatch].predicted_time).day, 50, 275);
 	c.fillStyle = "#1f1f1f";
 	c.font = "50px Comic Sans MS";
 	c.fillText("# " + matchData[nextMatch].match_number, 300, 55);
 
 	c.font = "60px Comic Sans MS";
-	c.fillText("Alliance:", 650 - c.measureText("Alliance:").width / 2, 75);
+	c.fillText("Alliance:", 700 - c.measureText("Alliance:").width / 2, 75);
 	c.font = "135px Comic Sans MS";
 	if (ourPosition[nextMatch].alliance === "red") {
 		c.fillStyle = "#8f1f1f";
 	} else if (ourPosition[nextMatch].alliance === "blue") {
 		c.fillStyle = "#1f1f8f";
 	}
-	c.fillText(ourPosition[nextMatch].alliance.charAt(0).toUpperCase() + ourPosition[nextMatch].alliance.slice(1), 650 - c.measureText(ourPosition[nextMatch].alliance.charAt(0).toUpperCase() + ourPosition[nextMatch].alliance.slice(1)).width / 2, 200);
+	c.fillText(ourPosition[nextMatch].alliance.charAt(0).toUpperCase() + ourPosition[nextMatch].alliance.slice(1), 700 - c.measureText(ourPosition[nextMatch].alliance.charAt(0).toUpperCase() + ourPosition[nextMatch].alliance.slice(1)).width / 2, 200);
 
 	c.font = "60px Comic Sans MS";
 	c.fillStyle = "#1f1f1f";
-	c.fillText("Position:", 950 - c.measureText("Position:").width / 2, 75);
+	c.fillText("Position:", 1000 - c.measureText("Position:").width / 2, 75);
 	var ordinal = ourPosition[nextMatch].position + 1;
 	c.font = "150px Comic Sans MS";
-	c.fillText(ordinal, 950 - c.measureText(ordinal).width / 2 - 20, 205);
+	c.fillText(ordinal, 1000 - c.measureText(ordinal).width / 2 - 20, 205);
 	if (ordinal === 1) {
 		var suffix = "st";
 	} else if (ordinal === 2) {
@@ -317,7 +320,7 @@ function draw() {
 		var suffix = "rd";
 	}
 	c.font = "50px Comic Sans MS";
-	c.fillText(suffix, 950 + c.measureText(ordinal).width / 2 + 5, 125);
+	c.fillText(suffix, 1000 + c.measureText(ordinal).width / 2 + 5, 125);
 	
 };
 
