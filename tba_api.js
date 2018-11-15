@@ -1,11 +1,18 @@
 
-// ------------------------------- //
-// Enter the event key here!       //
-const eventKey = "2018cttd";	   //
-// ------------------------------- //
-// And enter your team key here:   //
-const teamKey = "frc1777";		   //
-// ------------------------------- //
+// -------------------------------------------- //
+// Enter the event key here!                    //
+const eventKey = "2018cttd";	                //
+// -------------------------------------------- //
+// And enter your team key here:                //
+const teamKey = "frc1777";		                //
+// -------------------------------------------- //
+// If you need a new access code, put it here:  //
+const accessCode = "OqcUdRvkqHymqJ7hjgqXK4Ysf33UTY8ZCC9FNH8Cw91HLAOebZvaAkpS95U9nAZL";
+// -------------------------------------------- //
+
+// If the times are off for some reason change this value (it's in seconds):
+var timeAdjust = -18060;
+
 
 var canvas = document.querySelector("canvas");
 canvas.width = window.innerWidth;
@@ -81,13 +88,11 @@ var matchData;
 var eventData;
 var nextMatch;
 var firstDay;
-var timeAdjust = -18060; // when the time is just off for some reason
 var time = {};
 var ourPosition = [];
 const Http = new XMLHttpRequest();
 const url1 = "https://www.thebluealliance.com/api/v3/team/" + teamKey + "/event/" + eventKey + "/matches";
 const url2 = "https://www.thebluealliance.com/api/v3/team/" + teamKey + "/event/" + eventKey + "/status";
-const accessCode = "OqcUdRvkqHymqJ7hjgqXK4Ysf33UTY8ZCC9FNH8Cw91HLAOebZvaAkpS95U9nAZL";
 
 function updateData() {
 	Http.open("GET", url1);
@@ -96,7 +101,16 @@ function updateData() {
 	Http.onreadystatechange = (e) => {
 		if (Http.readyState != 4) { return; }
 		matchData = JSON.parse(Http.responseText);
-		matchData = matchData.sort(function(a, b) {return a.match_number - b.match_number;});
+		matchData = matchData.sort(function(a, b) {
+			var enforcer = 0;
+			if (a.comp_level === "qf") {
+				enforcer += 65536;
+			}
+			if (b.comp_level === "qf") {
+				enforcer -= 65536;
+			}
+			return a.match_number - b.match_number + enforcer;
+		});
 		console.log(matchData);
 		firstDay = Math.floor(matchData[0].predicted_time / 86400) * 86400;
 
