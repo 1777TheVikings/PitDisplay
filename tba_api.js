@@ -1,7 +1,11 @@
-// ---------------------------
-// Enter the event key here!
-const eventKey = "2018cttd";
-// ---------------------------
+
+// ------------------------------- //
+// Enter the event key here!       //
+const eventKey = "2018cttd";	   //
+// ------------------------------- //
+// And enter your team key here:   //
+const teamKey = "frc1777";		   //
+// ------------------------------- //
 
 var canvas = document.querySelector("canvas");
 canvas.width = window.innerWidth;
@@ -81,8 +85,8 @@ var timeAdjust = -18060; // when the time is just off for some reason
 var time = {};
 var ourPosition = [];
 const Http = new XMLHttpRequest();
-const url1 = "https://www.thebluealliance.com/api/v3/team/frc1777/event/" + eventKey + "/matches";
-const url2 = "https://www.thebluealliance.com/api/v3/team/frc1777/event/" + eventKey + "/status";
+const url1 = "https://www.thebluealliance.com/api/v3/team/" + teamKey + "/event/" + eventKey + "/matches";
+const url2 = "https://www.thebluealliance.com/api/v3/team/" + teamKey + "/event/" + eventKey + "/status";
 const accessCode = "OqcUdRvkqHymqJ7hjgqXK4Ysf33UTY8ZCC9FNH8Cw91HLAOebZvaAkpS95U9nAZL";
 
 function updateData() {
