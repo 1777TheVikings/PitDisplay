@@ -1,10 +1,10 @@
 
 // -------------------------------------------- //
 // Enter the event key here!                    //
-const eventKey = "2019ksla";	                //
+const eventKey = "2019kcmo";	                //
 // -------------------------------------------- //
 // And enter your team key here:                //
-const teamKey = "frc1730";		                //
+const teamKey = "frc1777";		                //
 // -------------------------------------------- //
 // If you need a new access code, put it here:  //
 const accessCode = "OqcUdRvkqHymqJ7hjgqXK4Ysf33UTY8ZCC9FNH8Cw91HLAOebZvaAkpS95U9nAZL";
