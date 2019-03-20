@@ -1,7 +1,7 @@
 
 // -------------------------------------------- //
 // Enter the event key here!                    //
-const eventKey = "2018cttd";	                //
+const eventKey = "2019mokc";	                //
 // -------------------------------------------- //
 // And enter your team key here:                //
 const teamKey = "frc1777";		                //
