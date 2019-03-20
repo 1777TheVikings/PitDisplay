@@ -1,10 +1,10 @@
 
 // -------------------------------------------- //
 // Enter the event key here!                    //
-const eventKey = "2019mokc";	                //
+const eventKey = "2019ksla";	                //
 // -------------------------------------------- //
 // And enter your team key here:                //
-const teamKey = "frc1777";		                //
+const teamKey = "frc1730";		                //
 // -------------------------------------------- //
 // If you need a new access code, put it here:  //
 const accessCode = "OqcUdRvkqHymqJ7hjgqXK4Ysf33UTY8ZCC9FNH8Cw91HLAOebZvaAkpS95U9nAZL";
@@ -109,6 +109,19 @@ function updateData() {
 			if (b.comp_level === "qf") {
 				enforcer -= 65536;
 			}
+			if (a.comp_level === "sf") {
+				enforcer += 65536*2;
+			}
+			if (b.comp_level === "sf") {
+				enforcer -= 65536*2;
+			}
+			if (a.comp_level === "f") {
+				enforcer += 65536*3;
+			}
+			if (b.comp_level === "f") {
+				enforcer -= 65536*3;
+			}
+			
 			return a.match_number - b.match_number + enforcer;
 		});
 		console.log(matchData);
@@ -127,12 +140,12 @@ function updateData() {
 
 			for (var a = 0; a < matchData.length; a++) {
 				for (var b = 0; b < 3; b++) {
-					if (matchData[a].alliances.red.team_keys[b] === "frc1777") {
+					if (matchData[a].alliances.red.team_keys[b] === teamKey) {
 						ourPosition[a] = {
 							alliance: "red",
 							position: b
 						};
-					} else if (matchData[a].alliances.blue.team_keys[b] === "frc1777") {
+					} else if (matchData[a].alliances.blue.team_keys[b] === teamKey) {
 						ourPosition[a] = {
 							alliance: "blue",
 							position: b
@@ -140,7 +153,7 @@ function updateData() {
 					}
 				}
 			}
-
+			console.log(ourPosition);
 			draw();
 		}
 	}
@@ -158,7 +171,7 @@ function updateNextMatch () {
 			nextMatch = a;
 		}
 	}
-}
+};
 
 updateData();
 
@@ -270,7 +283,18 @@ function draw() {
 	c.fillStyle = "#1f1f1f";
 	c.fillText("Time: " + getTime(matchData[activeMatch].predicted_time).hour12 + ":" + minutes + " " + getTime(matchData[activeMatch].predicted_time).AMorPM, innerWidth / 4 - c.measureText("Time: " + getTime(matchData[activeMatch].predicted_time).hour12 + ":" + minutes + " " + getTime(matchData[activeMatch].predicted_time).AMorPM).width / 2, windowBreak + 360);
 	c.font = "40px Comic Sans MS";
-	c.fillText("Day " + getTime(matchData[activeMatch].predicted_time).day + "   Match " + matchData[activeMatch].match_number, innerWidth / 4 - c.measureText("Day " + getTime(matchData[activeMatch].predicted_time).day + "   Match " + matchData[activeMatch].match_number).width / 2, windowBreak + 410);
+	var matchType;
+	if (matchData[activeMatch].comp_level === "qm") {
+		matchType = "Qualifier Match";
+	} else if (matchData[activeMatch].comp_level === "qf") {
+		matchType = "Qualifier Final Match";
+	} else if (matchData[activeMatch].comp_level === "sf") {
+		matchType = "Semi-Final Match";
+	} else if (matchData[activeMatch].comp_level === "f") {
+		matchType = "Final Match";
+	}
+	matchType = "   " + matchType + " ";
+	c.fillText("Day " + getTime(matchData[activeMatch].predicted_time).day + matchType + matchData[activeMatch].match_number, innerWidth / 4 - c.measureText("Day " + getTime(matchData[activeMatch].predicted_time).day + matchType + matchData[activeMatch].match_number).width / 2, windowBreak + 410);
 
 	// Right Pane
 	c.font = "75px Comic Sans MS";
@@ -341,7 +365,6 @@ function draw() {
 	c.fillText(suffix, 1000 + c.measureText(ordinal).width / 2 + 5, 125);
 	
 };
-
 
 
 
